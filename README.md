@@ -14,6 +14,12 @@ reading raw logs. Distilled from hands-on work across dozens of projects.
 
 Harnesses: [Hermes Agent](https://hermes-agent.nousresearch.com), Claude Code, Codex.
 
+**Main scenario.** The playbook is tuned for one setup: Hermes is the coordinator you talk to
+(desktop app, CLI or Telegram), and it launches Claude Code and Codex workers in Orca, each in its
+own terminal and git worktree. Hermes plans, routes, reviews and commits; Orca workers do the heavy
+edits in parallel. The rules and skills also work in plain Claude Code or Codex, but the delegation,
+worker lifecycle and acceptance parts assume Hermes + Orca.
+
 ### How it works
 
 ![How a task flows through the agents](docs/how-it-works.en.png)
@@ -139,6 +145,12 @@ not included and are distributed under their own licenses.
 дашборды долгих прогонов, аналитические страницы отчётов с графиками, кликабельные прототипы и схемы.
 Владелец видит, что делают агенты и что получилось, не читая сырые логи. Собран на базе работы
 над десятками проектов.
+
+**Основной сценарий.** Playbook заточен под одну связку: Hermes — координатор, с которым вы говорите
+(десктоп, CLI или Telegram), а он запускает воркеров Claude Code и Codex в Orca, каждого в своём
+терминале и git worktree. Hermes планирует, распределяет, принимает и коммитит; тяжёлые правки
+параллельно делают воркеры Orca. Правила и навыки работают и в чистом Claude Code или Codex, но части
+про делегирование, жизненный цикл воркеров и приёмку рассчитаны на Hermes + Orca.
 
 ### Как это работает
 
