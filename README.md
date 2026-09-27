@@ -62,8 +62,68 @@ This is a personal working configuration published as an example. Replace the pl
 paths and the CPU limits with your own. No secrets are stored here: bot tokens and API keys live in
 each project's `.env`.
 
-Install (Windows, git-bash) and new-project steps: see the Russian section below or
-`skills/autonomous-ai-agents/agent-project-setup/SKILL.md`.
+### Install with your agent (easiest)
+
+Paste this into Hermes, Claude Code or Codex on the target machine:
+
+```text
+Install the agent playbook from https://github.com/wCELENw/agent-playbook on this machine.
+Follow its README "Install manually" steps and skills/autonomous-ai-agents/agent-project-setup/SKILL.md.
+Before copying, show me which of my existing rules and skills would be overwritten and wait for my OK.
+Ask me for the values behind the placeholders (<OWNER_CHAT_ID>, <tailnet>, machine names,
+paths, CPU limits) and put them into the installed copies only, never into the clone.
+Record the installed commit in ~/.agents/agent-playbook.version.
+Finish by checking that each harness actually loads the rules and skills.
+```
+
+The agent reads the repo, adapts it to your machine and asks before overwriting anything.
+
+### Install manually (Windows, git-bash)
+
+```bash
+git clone https://github.com/wCELENw/agent-playbook ~/agent-playbook
+mkdir -p ~/.agents && cp ~/agent-playbook/global/GLOBAL_RULES.md ~/.agents/GLOBAL_RULES.md
+# symlinks (Developer Mode): SOUL.md, ~/.claude/CLAUDE.md, ~/.codex/AGENTS.md -> ~/.agents/GLOBAL_RULES.md
+cp -r ~/agent-playbook/skills/* "$LOCALAPPDATA/hermes/skills/"
+git -C ~/agent-playbook rev-parse HEAD > ~/.agents/agent-playbook.version
+# early auto-compaction for Claude Code (rule 15): env in ~/.claude/settings.json
+python -c "import json,pathlib;p=pathlib.Path.home()/'.claude/settings.json';d=json.loads(p.read_text('utf-8')) if p.exists() else {};d.setdefault('env',{})['CLAUDE_CODE_AUTO_COMPACT_WINDOW']='300000';p.write_text(json.dumps(d,indent=2,ensure_ascii=False),'utf-8')"
+```
+
+Then replace the placeholders in the installed copies. Full steps, including the load check for each
+harness: `skills/autonomous-ai-agents/agent-project-setup/SKILL.md`. On macOS/Linux use
+`~/.hermes/skills` instead of `$LOCALAPPDATA/hermes/skills`.
+
+### New project
+
+1. Copy `project-template/` into the repository root and fill in `CLAUDE.md`.
+2. Add project roles as `.claude/agents/<role>.md`, modelled on `architect`/`doc-keeper`/`qa-tester`
+   (model and effort in the frontmatter); list their zones in `docs/studio/STUDIO.md` §2.
+3. `MSYS=winsymlinks:nativestrict ln -s ../.claude/skills .agents/skills`, then `hermes skills trust .`.
+
+### Staying up to date
+
+Your installed copies are personalised, so an update is a merge, not a blind copy. Ask your agent:
+
+```text
+Update the agent playbook: git pull in ~/agent-playbook, then summarise what changed since the commit
+in ~/.agents/agent-playbook.version. Merge the changes into my installed rules and skills, keeping my
+own values and local edits; ask me where they conflict. Update the version file and re-run the
+load check.
+```
+
+Manual equivalent:
+
+```bash
+cd ~/agent-playbook && git pull
+git log --oneline "$(cat ~/.agents/agent-playbook.version)..HEAD"      # what is new
+git diff "$(cat ~/.agents/agent-playbook.version)..HEAD" -- global skills  # merge these by hand
+git rev-parse HEAD > ~/.agents/agent-playbook.version
+```
+
+To check regularly, either click **Watch** on GitHub, or let Hermes do it on a schedule, e.g.
+`/cron add "0 10 * * 1" "Check github.com/wCELENw/agent-playbook for commits newer than
+~/.agents/agent-playbook.version and send me a short summary; do not install anything."`
 
 ### License
 
@@ -129,13 +189,30 @@ not included and are distributed under their own licenses.
 Сторонние пакеты (`caveman`, `ponytail`, `archify`, Orca `orchestration`) не вендорятся — ставятся
 из источников по `skills/autonomous-ai-agents/agent-project-setup/references/third-party-skill-packs.md`.
 
-### Установка на машину (Windows, git-bash)
+### Установка через агента (проще всего)
+
+Вставьте это в Hermes, Claude Code или Codex на нужной машине:
+
+```text
+Установи agent playbook из https://github.com/wCELENw/agent-playbook на эту машину.
+Действуй по разделу README «Установка вручную» и skills/autonomous-ai-agents/agent-project-setup/SKILL.md.
+Перед копированием покажи, какие мои правила и навыки будут перезаписаны, и дождись моего OK.
+Спроси у меня значения плейсхолдеров (<OWNER_CHAT_ID>, <tailnet>, имена машин, пути, лимиты CPU)
+и впиши их только в установленные копии, не в клон.
+Запиши установленный коммит в ~/.agents/agent-playbook.version.
+В конце проверь, что каждый харнесс реально подгружает правила и навыки.
+```
+
+Агент сам прочитает репозиторий, подгонит его под машину и спросит перед перезаписью.
+
+### Установка вручную (Windows, git-bash)
 
 ```bash
 git clone https://github.com/wCELENw/agent-playbook ~/agent-playbook
-cp ~/agent-playbook/global/GLOBAL_RULES.md ~/.agents/GLOBAL_RULES.md
+mkdir -p ~/.agents && cp ~/agent-playbook/global/GLOBAL_RULES.md ~/.agents/GLOBAL_RULES.md
 # симлинки (Developer Mode): SOUL.md, ~/.claude/CLAUDE.md, ~/.codex/AGENTS.md -> ~/.agents/GLOBAL_RULES.md
 cp -r ~/agent-playbook/skills/* "$LOCALAPPDATA/hermes/skills/"
+git -C ~/agent-playbook rev-parse HEAD > ~/.agents/agent-playbook.version
 # ранняя автосводка Claude Code (правило 15): env в ~/.claude/settings.json
 python -c "import json,pathlib;p=pathlib.Path.home()/'.claude/settings.json';d=json.loads(p.read_text('utf-8')) if p.exists() else {};d.setdefault('env',{})['CLAUDE_CODE_AUTO_COMPACT_WINDOW']='300000';p.write_text(json.dumps(d,indent=2,ensure_ascii=False),'utf-8')"
 ```
@@ -150,10 +227,35 @@ python -c "import json,pathlib;p=pathlib.Path.home()/'.claude/settings.json';d=j
    (модель и effort во frontmatter), зоны — в таблицу `docs/studio/STUDIO.md` §2.
 3. `MSYS=winsymlinks:nativestrict ln -s ../.claude/skills .agents/skills`, `hermes skills trust .`.
 
-### Обновление
+### Регулярное обновление
+
+Установленные копии подогнаны под вашу машину, поэтому обновление — это слияние, а не слепое
+копирование. Скажите агенту:
+
+```text
+Обнови agent playbook: git pull в ~/agent-playbook, затем кратко перескажи, что изменилось с коммита
+из ~/.agents/agent-playbook.version. Влей изменения в мои установленные правила и навыки, сохранив
+мои значения и локальные правки; где конфликт — спроси. Обнови файл версии и повтори проверку загрузки.
+```
+
+Вручную:
+
+```bash
+cd ~/agent-playbook && git pull
+git log --oneline "$(cat ~/.agents/agent-playbook.version)..HEAD"      # что нового
+git diff "$(cat ~/.agents/agent-playbook.version)..HEAD" -- global skills  # влить руками
+git rev-parse HEAD > ~/.agents/agent-playbook.version
+```
+
+Чтобы не забывать проверять: нажмите **Watch** на GitHub или поручите это Hermes по расписанию, например
+`/cron add "0 10 * * 1" "Проверь github.com/wCELENw/agent-playbook на коммиты новее
+~/.agents/agent-playbook.version и пришли короткую сводку; ничего не устанавливай."`
+
+### Публикация своих изменений (для мейнтейнера)
 
 Канон — рабочие файлы на машине (`~/.agents`, `%LOCALAPPDATA%\hermes\skills`). После правки навыка
-или правил — скопировать в репозиторий, заменить личные данные плейсхолдерами и закоммитить.
+или правил — скопировать в клон, заменить личные данные плейсхолдерами, прогнать
+`bash scripts/check-public.sh` (он же стоит хуком `pre-push`) и закоммитить.
 
 ### Перед использованием
 
