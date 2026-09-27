@@ -69,7 +69,8 @@ Luna всегда с effort xhigh (решение владельца: почти
 - **claude-mem у Claude-воркеров — чистый расход.** Плагин claude-mem (thedotmack) на каждое событие
   сессии зовёт Haiku; при Hermes-координаторе память ведёт Hermes, и за 5 дней на одной машине вышло
   ~4300 вызовов (~$45). Отключение только для запусков Orca: `agentDefaultEnv.claude.CLAUDE_MEM_INTERNAL = "1"`
-  в настройках Orca (SQLite, правка при закрытой Orca) — пункт 14 `docs/startup-settings.md`
+  в настройках Orca (новые версии — SQLite `profile-state.db`, старые — `orca-data.json`; правка
+  только при закрытой Orca) — пункт 14 `docs/startup-settings.md`
   playbook, скрипт `scripts/orca_agent_env.py`. Проверка — 0 строк `sdk_sessions` в
   `~/.claude-mem/claude-mem.db` по папке тестового воркера.
 - `check --wait` без `--ack` снова отдаёт ту же непрочитанную пачку; смотреть все сообщения run — `check --all --json`.

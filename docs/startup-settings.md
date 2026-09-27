@@ -64,12 +64,15 @@ Windows + git-bash; on macOS/Linux use `~/.hermes` for `$LOCALAPPDATA/hermes` an
 
 ## 5. Orca
 
-13. **Orca settings live in SQLite**, not in `orca-data.json` (that is an export):
+13. **Where Orca keeps settings depends on its version.** Newer Orca (seen in 1.4.215): SQLite
     `%APPDATA%/orca/profiles/local-default/profile-state.db`, table `profile_state_documents`,
-    row `domain='settings'`, JSON in `payload`, `content_hash = sha256(payload)` hex. Edit only
-    with Orca fully closed (every `Orca.exe` except `daemon-host`): Orca keeps settings in memory
-    and overwrites a live edit. Use `scripts/orca_agent_env.py` — it backs up `profile-state.db*`,
-    bumps `revision`, recomputes the hash.
+    row `domain='settings'`, JSON in `payload`, `content_hash = sha256(payload)` hex;
+    `orca-data.json` is then only an export. Older Orca (seen in 1.4.210): no such table, settings
+    are in `orca-data.json` → `settings`. Edit only with Orca fully closed (every `Orca.exe`
+    except `daemon-host`): Orca keeps settings in memory and overwrites a live edit. Use
+    `scripts/orca_agent_env.py`: it finds the store, backs it up, and for SQLite bumps `revision`
+    and recomputes the hash. Do not open `profile-state.db` with a plain `sqlite3.connect` where
+    it does not exist: that creates an empty file.
 14. **claude-mem off for Orca workers** — only if the Claude Code plugin claude-mem
     (thedotmack) is installed (`~/.claude-mem/` exists).
     Why: it hooks SessionStart / UserPromptSubmit / PostToolUse / PreToolUse(Read) / Stop /
