@@ -1,0 +1,241 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "agent-playbook: как задача проходит через агентов",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "owner",
+      "label": "Владелец"
+    },
+    {
+      "id": "coord",
+      "label": "Координатор (Hermes)"
+    },
+    {
+      "id": "workers",
+      "label": "Исполнители"
+    },
+    {
+      "id": "limits",
+      "label": "Лимиты",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "intake",
+      "label": "Постановка",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "work",
+      "label": "Маршрутизация и работа",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "accept",
+      "label": "Приёмка и выдача",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "task",
+    "plan",
+    "route",
+    "delegate",
+    "verify",
+    "commit",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "task",
+      "lane": "owner",
+      "col": 0,
+      "type": "external",
+      "label": "Задача",
+      "sublabel": "чат или Telegram",
+      "width": 140
+    },
+    {
+      "id": "report",
+      "lane": "owner",
+      "col": 5,
+      "type": "frontend",
+      "label": "Отчёт",
+      "sublabel": "файл:строка, ссылка",
+      "width": 140
+    },
+    {
+      "id": "plan",
+      "lane": "coord",
+      "col": 1,
+      "type": "backend",
+      "label": "Декомпозиция",
+      "sublabel": "Opus 5.5",
+      "tag": "CLAUDE.md + скиллы",
+      "width": 140
+    },
+    {
+      "id": "route",
+      "lane": "coord",
+      "col": 2,
+      "type": "backend",
+      "label": "Маршрутизация",
+      "sublabel": "правило §9",
+      "width": 140
+    },
+    {
+      "id": "verify",
+      "lane": "coord",
+      "col": 4,
+      "type": "security",
+      "label": "Приёмка",
+      "sublabel": "diff + проверки",
+      "tag": "самоотчёт не факт",
+      "width": 140
+    },
+    {
+      "id": "commit",
+      "lane": "coord",
+      "col": 5,
+      "type": "database",
+      "label": "Коммит",
+      "sublabel": "git + веб-страница",
+      "width": 140
+    },
+    {
+      "id": "scripts",
+      "lane": "workers",
+      "col": 2,
+      "type": "messagebus",
+      "label": "Скрипты",
+      "sublabel": "execute_code, без модели",
+      "width": 140
+    },
+    {
+      "id": "delegate",
+      "lane": "workers",
+      "col": 3,
+      "type": "backend",
+      "label": "Субагент",
+      "sublabel": "delegate_task, Opus medium",
+      "width": 140
+    },
+    {
+      "id": "orca",
+      "lane": "workers",
+      "col": 4,
+      "type": "backend",
+      "label": "Orca-воркер",
+      "sublabel": "Claude, роль из .claude/agents",
+      "width": 140
+    },
+    {
+      "id": "codex",
+      "lane": "workers",
+      "col": 5,
+      "type": "cloud",
+      "label": "Codex",
+      "sublabel": "только картинки, вне цепочки",
+      "width": 140
+    },
+    {
+      "id": "limit",
+      "lane": "limits",
+      "col": 4,
+      "type": "security",
+      "label": "2–3 итерации",
+      "sublabel": "отложить или спросить",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "task-plan",
+      "from": "task",
+      "to": "plan"
+    },
+    {
+      "id": "plan-route",
+      "from": "plan",
+      "to": "route",
+      "variant": "emphasis"
+    },
+    {
+      "id": "route-scripts",
+      "from": "route",
+      "to": "scripts",
+      "label": "механика",
+      "role": "branch"
+    },
+    {
+      "id": "route-delegate",
+      "from": "route",
+      "to": "delegate",
+      "label": "спека",
+      "variant": "emphasis"
+    },
+    {
+      "id": "delegate-verify",
+      "from": "delegate",
+      "to": "verify",
+      "variant": "emphasis"
+    },
+    {
+      "id": "workers-verify",
+      "from": "orca",
+      "to": "verify",
+      "label": "сдача",
+      "variant": "emphasis"
+    },
+    {
+      "id": "verify-commit",
+      "from": "verify",
+      "to": "commit",
+      "variant": "emphasis"
+    },
+    {
+      "id": "commit-report",
+      "from": "commit",
+      "to": "report",
+      "variant": "emphasis"
+    },
+    {
+      "id": "verify-limit",
+      "from": "verify",
+      "to": "limit",
+      "label": "не сходится",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Модели",
+      "items": [
+        "Координатор и все агенты: Claude Opus 5.5",
+        "Effort: medium по умолчанию, high для архитектуры и приёмки",
+        "Codex только для генерации изображений"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Правила",
+      "items": [
+        "Не больше 2–3 итераций на проблему, затем отложить или спросить",
+        "Не больше 80% ядер под прогоны и тесты",
+        "Ход и результаты работы видны в браузере: дашборды, отчёты, прототипы"
+      ]
+    }
+  ]
+}

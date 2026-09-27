@@ -1,0 +1,242 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "agent-playbook: how a task flows",
+    "quality_profile": "showcase",
+    "locale": "en"
+  },
+  "lanes": [
+    {
+      "id": "owner",
+      "label": "Owner"
+    },
+    {
+      "id": "coord",
+      "label": "Coordinator (Hermes)"
+    },
+    {
+      "id": "workers",
+      "label": "Executors"
+    },
+    {
+      "id": "limits",
+      "label": "Limits",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "intake",
+      "label": "Intake",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "work",
+      "label": "Routing and work",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "accept",
+      "label": "Acceptance and delivery",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "task",
+    "plan",
+    "route",
+    "delegate",
+    "verify",
+    "commit",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "task",
+      "lane": "owner",
+      "col": 0,
+      "type": "external",
+      "label": "Task",
+      "sublabel": "chat or Telegram",
+      "width": 140
+    },
+    {
+      "id": "report",
+      "lane": "owner",
+      "col": 5,
+      "type": "frontend",
+      "label": "Report",
+      "sublabel": "file:line, link",
+      "width": 140
+    },
+    {
+      "id": "plan",
+      "lane": "coord",
+      "col": 1,
+      "type": "backend",
+      "label": "Breakdown",
+      "sublabel": "Opus 5.5",
+      "tag": "CLAUDE.md + skills",
+      "width": 140
+    },
+    {
+      "id": "route",
+      "lane": "coord",
+      "col": 2,
+      "type": "backend",
+      "label": "Routing",
+      "sublabel": "rule §9",
+      "width": 140
+    },
+    {
+      "id": "verify",
+      "lane": "coord",
+      "col": 4,
+      "type": "security",
+      "label": "Acceptance",
+      "sublabel": "diff + checks",
+      "tag": "self-report ≠ fact",
+      "width": 140
+    },
+    {
+      "id": "commit",
+      "lane": "coord",
+      "col": 5,
+      "type": "database",
+      "label": "Commit",
+      "sublabel": "git + web page",
+      "width": 140
+    },
+    {
+      "id": "scripts",
+      "lane": "workers",
+      "col": 2,
+      "type": "messagebus",
+      "label": "Scripts",
+      "sublabel": "execute_code, no model",
+      "width": 140
+    },
+    {
+      "id": "delegate",
+      "lane": "workers",
+      "col": 3,
+      "type": "backend",
+      "label": "Subagent",
+      "sublabel": "delegate_task, Opus medium",
+      "width": 140
+    },
+    {
+      "id": "orca",
+      "lane": "workers",
+      "col": 4,
+      "type": "backend",
+      "label": "Orca worker",
+      "sublabel": "Claude, role from .claude/agents",
+      "width": 140
+    },
+    {
+      "id": "codex",
+      "lane": "workers",
+      "col": 5,
+      "type": "cloud",
+      "label": "Codex",
+      "sublabel": "images only, off the chain",
+      "width": 140
+    },
+    {
+      "id": "limit",
+      "lane": "limits",
+      "col": 4,
+      "type": "security",
+      "label": "2–3 iterations",
+      "sublabel": "park it or ask",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "task-plan",
+      "from": "task",
+      "to": "plan"
+    },
+    {
+      "id": "plan-route",
+      "from": "plan",
+      "to": "route",
+      "variant": "emphasis"
+    },
+    {
+      "id": "route-scripts",
+      "from": "route",
+      "to": "scripts",
+      "label": "mechanical",
+      "role": "branch"
+    },
+    {
+      "id": "route-delegate",
+      "from": "route",
+      "to": "delegate",
+      "label": "spec",
+      "variant": "emphasis"
+    },
+    {
+      "id": "delegate-verify",
+      "from": "delegate",
+      "to": "verify",
+      "variant": "emphasis"
+    },
+    {
+      "id": "workers-verify",
+      "from": "orca",
+      "to": "verify",
+      "label": "hand-in",
+      "variant": "emphasis"
+    },
+    {
+      "id": "verify-commit",
+      "from": "verify",
+      "to": "commit",
+      "variant": "emphasis"
+    },
+    {
+      "id": "commit-report",
+      "from": "commit",
+      "to": "report",
+      "variant": "emphasis"
+    },
+    {
+      "id": "verify-limit",
+      "from": "verify",
+      "to": "limit",
+      "label": "fails",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Models",
+      "items": [
+        "Coordinator and all agents: Claude Opus 5.5",
+        "Effort: medium by default, high for architecture and acceptance",
+        "Codex only for image generation"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Rules",
+      "items": [
+        "At most 2–3 iterations per problem, then park it or ask",
+        "At most 80% of CPU threads for runs and tests",
+        "Progress and results live in the browser: dashboards, reports"
+      ]
+    }
+  ]
+}
