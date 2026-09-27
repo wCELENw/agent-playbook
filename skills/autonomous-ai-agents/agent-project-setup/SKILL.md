@@ -43,6 +43,8 @@ description: "Use when wiring Hermes/Codex/Claude or adding skill packs."
    `codex debug prompt-input hi` из репо и grep по фразе из CLAUDE.md, для каждого дома.
 5a. Claude Code: для воркеров Orca проект должен быть доверенным — `hasTrustDialogAccepted: true`
    в `~/.claude.json` → `projects["C:/..."]`, иначе воркер висит на диалоге доверия.
+   Машинные настройки связки Hermes + Orca целиком (модели, звук, claude-mem у воркеров, env Orca) —
+   чек-лист `docs/startup-settings.md` в playbook; после установки агент выполняет его с проверками.
 5b. Сторонние навыки (пакеты вроде awesome-gamedev-agent-skills) — вендорить в `.claude/skills/`
    только нужные (по движку и ролям), лицензию и NOTICE — в `docs/third-party/`; не ставить весь
    пакет через `npx skills add`/плагин: индекс навыков стоит токенов в каждом запросе.

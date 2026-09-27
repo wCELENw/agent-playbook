@@ -53,6 +53,7 @@ built with [Archify](https://github.com/tt-a1i/archify).
 | `global/GLOBAL_RULES.md` | global rules: principles, language and tone, model routing (§9), project layout (§10), iteration cap (§12), CPU cap (§13), results as web pages (§14), worker context economy (§15) | `~/.agents/GLOBAL_RULES.md` + symlinks from `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
 | `skills/<category>/<name>` | global Hermes skills | `%LOCALAPPDATA%\hermes\skills\` |
 | `project-template/` | skeleton of a new project: `CLAUDE.md`, studio process, roles, task queue | root of a new repository |
+| `docs/startup-settings.md` | machine checklist for Hermes + Orca: each setting with its check | run by your agent after install |
 
 Key skills: `agent-delegation-and-verification` (spec, self-report check, acceptance),
 `orca-worker-routing` (Codex/Claude workers via Orca), `agent-cost-monitoring` (token cost vs
@@ -80,6 +81,7 @@ Ask me for the values behind the placeholders (<OWNER_CHAT_ID>, <tailnet>, machi
 paths, CPU limits) and put them into the installed copies only, never into the clone.
 Record the installed commit in ~/.agents/agent-playbook.version.
 Finish by checking that each harness actually loads the rules and skills.
+Then read docs/startup-settings.md and carry out every item, reporting each check's result.
 ```
 
 The agent reads the repo, adapts it to your machine and asks before overwriting anything.
@@ -96,7 +98,14 @@ git -C ~/agent-playbook rev-parse HEAD > ~/.agents/agent-playbook.version
 python -c "import json,pathlib;p=pathlib.Path.home()/'.claude/settings.json';d=json.loads(p.read_text('utf-8')) if p.exists() else {};d.setdefault('env',{})['CLAUDE_CODE_AUTO_COMPACT_WINDOW']='300000';p.write_text(json.dumps(d,indent=2,ensure_ascii=False),'utf-8')"
 ```
 
-Then replace the placeholders in the installed copies. Full steps, including the load check for each
+Then replace the placeholders in the installed copies.
+
+**Last step, required:** ask your agent "Read docs/startup-settings.md in ~/agent-playbook and carry
+out every item, reporting each check." It sets up the machine-level settings the Hermes + Orca
+workflow relies on (models, trust dialogs, sound, claude-mem off for workers, Orca env). Without it
+workers can hang or burn tokens.
+
+Full steps, including the load check for each
 harness: `skills/autonomous-ai-agents/agent-project-setup/SKILL.md`. On macOS/Linux use
 `~/.hermes/skills` instead of `$LOCALAPPDATA/hermes/skills`.
 
@@ -180,6 +189,7 @@ not included and are distributed under their own licenses.
 | `global/GLOBAL_RULES.md` | глобальные правила: принципы, язык и тон, маршрутизация моделей (§9), раскладка проекта (§10), лимит итераций (§12), CPU (§13), результаты веб-страницами (§14), экономия контекста воркеров (§15) | `~/.agents/GLOBAL_RULES.md` + симлинки `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
 | `skills/<категория>/<имя>` | глобальные навыки Hermes (см. ниже) | `%LOCALAPPDATA%\hermes\skills\` |
 | `project-template/` | каркас нового проекта: `CLAUDE.md`, процесс студии, роли, очередь задач | корень нового репозитория |
+| `docs/startup-settings.md` | стартовые настройки машины для Hermes + Orca: каждый пункт с проверкой | выполняет агент после установки |
 
 #### Навыки
 
@@ -213,6 +223,7 @@ not included and are distributed under their own licenses.
 и впиши их только в установленные копии, не в клон.
 Запиши установленный коммит в ~/.agents/agent-playbook.version.
 В конце проверь, что каждый харнесс реально подгружает правила и навыки.
+Затем прочитай docs/startup-settings.md и выполни каждый пункт, отчитавшись по его проверке.
 ```
 
 Агент сам прочитает репозиторий, подгонит его под машину и спросит перед перезаписью.
@@ -231,6 +242,11 @@ python -c "import json,pathlib;p=pathlib.Path.home()/'.claude/settings.json';d=j
 
 Подробно, с проверкой загрузки в каждом харнессе, — `skills/autonomous-ai-agents/agent-project-setup/SKILL.md`.
 Машинно-специфичные строки (хосты, chat_id, пути, модели) правятся под машину после копирования.
+
+**Последний шаг, обязательный:** попросите агента «Прочитай docs/startup-settings.md в ~/agent-playbook
+и выполни каждый пункт с проверкой». Он настроит на машине всё, на что опирается связка Hermes + Orca:
+модели, доверие папок, звук, отключение claude-mem у воркеров, окружение Orca. Без этого воркеры
+могут зависать или жечь токены.
 
 ### Новый проект
 
