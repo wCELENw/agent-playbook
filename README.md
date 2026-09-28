@@ -205,6 +205,7 @@ not included and are distributed under their own licenses.
 | `browser-page-preview` | дашборды, отчёты, прототипы и мониторы прогонов веб-страницами |
 | `git-branch-integration` | сведение веток воркеров в master |
 | `design-decision-interview` | закрытие развилок владельца по одной через `clarify` |
+| `deck-from-sources` | короткая презентация из документов: порядок работы воркеров, ловушки рендера |
 | `codex-web-search`, `video-transcript-research` | исследования |
 | `game-*`, `3d-asset-generation` | игровые проекты: препродакшн, баланс-симуляции, прототипы UI, 3D |
 
