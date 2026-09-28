@@ -102,7 +102,8 @@ Frontmatter роли (`model`, `effort`, `tools`) в Orca-воркере не д
   у run-create/worker-start/send и `--terminal` у check (`--from` там `invalid_argument`).
 - **`worker-start --worktree current` из Hermes gateway открывает Claude-воркер в основном дереве, а не в `cwd`
   вызова.** Первой строкой спеки писать абсолютный путь worktree + «cd туда, git -C для всех git-команд, в основном
-  дереве ничего не менять»; после старта проверить статусбар.
+  дереве ничего не менять»; после старта проверить статусбар и при необходимости дослать то же
+  сообщение `orca terminal send`.
 - Codex иногда стартует пустым (`turn_start_unobserved`, поле ввода пустое >60 с) или голым PowerShell, в который
   спека ушла как команды (`turnStart: unsupported`, `Имя "…" не распознано`) — release/abandon + `terminal close` +
   тот же `worker-start` заново; несколько Codex подряд запускать с паузой ~20 с. Признак живого Codex —
@@ -119,8 +120,9 @@ Frontmatter роли (`model`, `effort`, `tools`) в Orca-воркере не д
 - Длинный inline-цикл bash с `$(...)` Hermes блокирует как «malformed payload» — вынести в скрипт.
 - `worker_done` после release отклоняется («capability is revoked») — это не ошибка, ack.
 - `--effort` требует `--model` и несовместим с `--terminal`.
-- `--from <handle>` принимают только `run-create`/`worker-start`/`send`; `worker-show` и `check` его
-  отвергают («Unknown flag --from») — им хватает `--dispatch` / `--terminal`.
+- `--from <handle>` принимают только `run-create`/`worker-start`/`send`; `worker-show`, `worker-release`
+  и `check` его отвергают («Unknown flag --from») — им хватает `--dispatch` / `--terminal`.
+- Ресурсы `retained` (`user_takeover`) `worker-release` не снимает — закрыть вкладки `orca terminal close`.
 - Самоотчёт модели о себе недостоверен; модель — только `launch.effective` или экран терминала.
 - `orca terminal close` не заменяет `worker-release`, а `worker-release` не закрывает вкладку. Если после
   release вкладка осталась (`orca terminal list`), закрыть её `orca terminal close --terminal <handle>` —
@@ -141,4 +143,6 @@ Frontmatter роли (`model`, `effort`, `tools`) в Orca-воркере не д
   только при закрытой Orca) — пункт 14 `docs/startup-settings.md` playbook, скрипт
   `scripts/orca_agent_env.py`; поля в UI Orca нет. Ручной `claude` в shell-вкладке не затронут.
   Проверка — в воркере `echo $CLAUDE_MEM_INTERNAL` = 1 и 0 строк `sdk_sessions` в
-  `~/.claude-mem/claude-mem.db` по папке тестового воркера.
+  `~/.claude-mem/claude-mem.db` по папке тестового воркера. Полумеры: `CLAUDE_MEM_EXCLUDED_PROJECTS`
+  в `~/.claude-mem/settings.json` глушит наблюдателя и summarize, но не SessionStart-инъекцию;
+  `claude --settings <файл>` с `enabledPlugins."claude-mem@thedotmack": false` выключает плагин целиком.

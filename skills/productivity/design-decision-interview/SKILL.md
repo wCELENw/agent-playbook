@@ -47,6 +47,9 @@ consequences, downstream docs in sync, one commit per pass.
   An answer to one fork can remove the premise of its neighbours (no per-damage-type boost
   kills the mono/hybrid question); re-read the pending forks after each answer and drop or
   re-word the voided ones.
+  The same holds for words from the design doc you work from ("склянка" for any consumable
+  buff item): the owner asks "что в твоём понимании X?". Name the thing by its role in the
+  owner's own terms ("предмет крафтового каста") or define it in one clause the first time.
 - `clarify` timed out (owner away): record the answers that arrived, mark the rest
   "ещё не выбраны — спросить перед <card/wave that needs them>", and keep going with work
   those answers do not block. Re-ask later in the same plain wording. On Telegram a
@@ -165,6 +168,13 @@ consequences, downstream docs in sync, one commit per pass.
      steps = 20 rolls) in the next related question and in the report.
 3. Stop follow-ups when the user calls it a separate big topic: log it as "отдельный
    разбор" in the doc and move on.
+   - Deferred topics the owner names "в тудушку" go into the project's root `TODO.md`: one
+     checkbox per topic with a "после <condition>" gate and the aspects the owner named, plus
+     a pointer to the decision line. Create the file if missing, link it from `CLAUDE.md` next
+     to the task queue, commit right away.
+   - A decision that moves work between stages changes the roadmap: say so in the report and
+     offer the roadmap edit. Hand it to the next design worker with the rule "dependencies on
+     the later stage → question with options, not a silent move".
    - The user may reverse an already recorded decision mid-flow. Edit that decision line
      in place and commit before the next topic; do not append a second rule.
    - The user may defer a segment but slip in one concrete change ("later, but move X
@@ -211,6 +221,55 @@ consequences, downstream docs in sync, one commit per pass.
    (`docs/STATUS.md`: document table status, next steps), commit docs (no push unless
    asked). A multi-part layout gets its own design doc (e.g. `docs/design/progression.md`)
    plus a row in the STATUS table.
+
+## Spec before code
+
+This owner wants an exact written spec before any engine work: concept forks closed, then a
+design-doc revision with its own engine section (data schema, formulas, tests that fail
+first, acceptance, sim sets), then the owner answers the revision's "Вопросы владельцу", they go
+into the decisions doc, and only then the engine worker starts with a spec citing that doc
+section plus the new answers. Never start code in parallel with an unfinished spec.
+- Placeholder numbers in that spec are implemented as written; the owner's power target
+  (e.g. "N packs at level L") goes into the data file header as a balancer target. The engine
+  worker never tunes numbers.
+- Technical questions from the engine worker that follow from recorded decisions: answer them
+  yourself, then tell the owner in one message (question, answer, why, "say so and I'll
+  change it"). Escalate only design forks. Conditions needed only to pick sim sets must not
+  restrict the player in the game; say so in the answer.
+- Owner targets like "holds N packs" are soft: record what success rate N means and how it
+  grows with level, not a hard cap.
+
+## Layout and map forks
+
+- Spatial forks (world map, location graph, zone layout) are chosen by picture, not by text:
+  the owner asks "сделай визуализации" instead of picking from prose. Deliver one diagram per
+  variant (dark theme) plus screenshots sent as MEDIA, then ask the pick. Offer the pictures
+  with the first question to skip a round-trip.
+- The owner usually picks a variant and modifies it ("A, but the east arc all PvP"). Relaunch
+  the design worker on that variant; its spec lists the earlier recorded rules the change
+  breaks (level gates, zone counts, stage switches, level bands of moved nodes) and requires
+  them as "Вопросы владельцу" with options, never silently resolved.
+- Location content rule of this owner: at least 2–3 monster species per location, overlaps
+  only between neighbours, shown as a species × location matrix.
+- Once the map is final, location key art may start as a parallel track: 16:9 painterly
+  backdrop per location, open readable middle band with flat spots for later markers. New art
+  family = one target location first, owner approval, then the rest in parallel (project art
+  skill). Each location prompt carries, from the map doc:
+  - its map neighbours and what of them is visible — a backdrop not tied to its neighbours
+    gets rejected;
+  - the location's own monsters from the species × location matrix, calm, small-to-medium
+    scale — an empty backdrop reads as dead;
+  - the function of the place: a safe outpost reads as a real fortification, a spot with an
+    NPC gets a mini-outpost, an industrial zone is ruined and unlit;
+  - "matte, dry painted surfaces, no wet/glossy sheen, soft painterly edges" plus explicit
+    bans on unwanted motifs from the reference images — image_gen otherwise renders surfaces
+    wet and copies reference architecture.
+- Art review: ONE image per message with its own approve/reject `clarify` ("N/M · name,
+  attempt K, neighbours, worker note"), not contact sheets or 5-question batches. The answer
+  is usually a free-text Other remark = correction for the next attempt. After the pass,
+  launch all second attempts in parallel; a partly liked image goes back as an edit of the
+  same image with the kept objects named, not a fresh generation. Keep attempt 1 under
+  `assets/<family>/_attempts/<slug>-1.png`.
 
 ## Numbers
 

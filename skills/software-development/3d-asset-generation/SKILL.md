@@ -40,6 +40,19 @@ of work and the owner's conventions.
   sheet script, not a per-sheet manual step; the Tripo row uses the same front input.
 - Judge shape candidates at two levels: raw mesh and after clean-up/decimation to the game
   budget (e.g. 20k tris for a humanoid). The budget level is what ships, so it decides.
+- **Do not carry the winning generator over to a new asset class.** A model picked on a whole
+  character (silhouette-driven) may lose on small parts (armour pieces, weapons) where rivets,
+  straps and rims fill the frame. For a new class run every installed generator per item.
+- **Two budget axes, never mixed:** generators are compared at an EQUAL triangle budget (else
+  the comparison measures budget, not model); then, for the winning model per part, a budget
+  ladder from the same master (e.g. 1.5k/3k/6k/12k, decimation only, no regeneration) finds
+  where quality stops growing. Output: per-part budget split (cuirass high, gauntlet low, base
+  body almost hidden) and the character total vs the monolith. Say which detail comes from
+  the mesh (silhouette, edges) and which from the normal map (rivets, stitches).
+- A style detail the owner requires on every part (e.g. glowing inlays in the armour accent
+  colour along plate ridges and rims) goes into every part prompt; for already approved
+  images, add it in 3D (mask of the accent lines as `emissiveMap` + light bloom in the
+  viewer) instead of regenerating.
 
 ## Procedure
 
@@ -130,7 +143,7 @@ untracked worker output is the only copy and is lost context when a worker dies.
 ## Remote GPU PC
 
 - Work over `ssh <host>` (PowerShell on the far side); keep everything in one root
-  (`D:\mo3d\{py,venv-*,repos,models,work,blender}`), never inside the owner's ComfyUI.
+  (`D:\<3d-root>\{py,venv-*,repos,models,work,blender}`), never inside the owner's ComfyUI.
   ComfyUI stays for texture touch-up.
 - Before working around slow downloads, measure the link: `curl.exe -s -L -o NUL -r
   0-104857599 -w "%{speed_download}" <huggingface resolve URL>` — report a slow link to the

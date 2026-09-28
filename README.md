@@ -54,7 +54,7 @@ built with [Archify](https://github.com/tt-a1i/archify).
 
 | Path | What | Installed to |
 |---|---|---|
-| `global/GLOBAL_RULES.md` | global rules: principles, language and tone, model routing (§9), project layout (§10), always-on skills (§11), iteration cap (§12), CPU cap (§13), results as web pages (§14), worker context economy (§15) | `~/.agents/GLOBAL_RULES.md` + symlinks from `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
+| `global/GLOBAL_RULES.md` | global rules: principles, language and tone, model routing (§9), project layout (§10), always-on skills (§11), iteration cap (§12), CPU cap (§13), results as web pages (§14), worker context economy (§15), sync between machines (§16) | `~/.agents/GLOBAL_RULES.md` + symlinks from `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
 | `skills/<category>/<name>` | global Hermes skills | `%LOCALAPPDATA%\hermes\skills\` |
 | `project-template/` | skeleton of a new project: `CLAUDE.md`, studio process, roles, task queue | root of a new repository |
 | `docs/startup-settings.md` | machine checklist for Hermes + Orca: each setting with its check | run by your agent after install |
@@ -193,7 +193,7 @@ Sonnet не используется (решение владельца 2026-09-
 
 | Путь | Что | Куда ставится |
 |---|---|---|
-| `global/GLOBAL_RULES.md` | глобальные правила: принципы, язык и тон, маршрутизация моделей (§9), раскладка проекта (§10), навыки по умолчанию (§11), лимит итераций (§12), CPU (§13), результаты веб-страницами (§14), экономия контекста воркеров (§15) | `~/.agents/GLOBAL_RULES.md` + симлинки `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
+| `global/GLOBAL_RULES.md` | глобальные правила: принципы, язык и тон, маршрутизация моделей (§9), раскладка проекта (§10), навыки по умолчанию (§11), лимит итераций (§12), CPU (§13), результаты веб-страницами (§14), экономия контекста воркеров (§15), синхронизация между машинами (§16) | `~/.agents/GLOBAL_RULES.md` + симлинки `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
 | `skills/<категория>/<имя>` | глобальные навыки Hermes (см. ниже) | `%LOCALAPPDATA%\hermes\skills\` |
 | `project-template/` | каркас нового проекта: `CLAUDE.md`, процесс студии, роли, очередь задач | корень нового репозитория |
 | `docs/startup-settings.md` | стартовые настройки машины для Hermes + Orca: каждый пункт с проверкой | выполняет агент после установки |

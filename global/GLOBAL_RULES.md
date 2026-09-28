@@ -61,6 +61,8 @@ Model decision (owner, 2026-09-28, replaces 2026-09-25 Sonnet routing): Sonnet i
 
 Verify the model by `worker-show` → `worker.startOptions.launch.effective`, not by the worker's self-report. Commands, lifecycle and traps: skill `orca-worker-routing`.
 
+Orca worker lifecycle: check the worker actually started 15–20 s after launch (Codex may leave the task unsent in its input box — send Enter), and release every finished worker (`worker-release`), leaving no idle worker tabs.
+
 ### 9a. Inside an Orca worker (a live preamble with Task and Dispatch IDs)
 - Questions to the coordinator only via `orca orchestration ask`; never `AskUserQuestion`, never `SendMessage`.
 - Do not start subagents or other agents unless the spec allows it.
@@ -115,6 +117,13 @@ Skills `caveman` (communication) and `ponytail` (code) are active from the start
 - **Гигиена вывода.** Логи и вывод команд — через фильтр (`grep`, `tail -n`), файлы — кусками по поиску,
   разведку по коду — Orca-воркеру, который возвращает выжимку; скриншоты — только для приёмки.
 Эти пункты координатор вписывает в спеку каждого воркера.
+
+## 16. Синхронизация правил и скиллов между машинами
+Источник правды для общих правил и глобальных скиллов — github.com/wCELENw/agent-playbook (`global/`, `skills/`); на машинах лежат копии.
+- **Правка — сразу в репо.** Правка или создание глобального скилла (не проектного `.claude/skills`, не частного) либо GLOBAL_RULES на любой машине — в том же ходе перенести в репо: частное (имена личных проектов, id, хосты) обобщить, `bash scripts/check-public.sh` → `clean`, коммит, пуш. Локальная копия = версия репо; частные примеры — в проектные скиллы, не в глобальные.
+- **Пулл — автоматически.** Задача планировщика `agent-playbook-sync` (ежедневно и при входе) запускает `scripts/sync_playbook.py`; он обновляет только копии, не правленные с прошлого синка. Автопуша нет: репо публичный, перед пушем нужна зачистка частного.
+- **Расхождения.** CONFLICT/LOCAL в `~/.agents/agent-playbook.sync.log` координатор разбирает при ближайшей работе со скиллами: слить в репо и запушить.
+- **Новая машина.** Установка задачи — `scripts/install-sync-task.ps1`.
 
 ## Codex usage monitor
 `node C:\Users\user\.codex\usage-status.js` shows the Codex limit and reset time (separate window: `powershell -ExecutionPolicy Bypass -File C:\Users\user\.codex\open-usage-status.ps1`).

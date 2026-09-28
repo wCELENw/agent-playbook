@@ -48,6 +48,18 @@ orchestration messages" in the TUI tab bound to that Run).
   history); say so explicitly in the reply.
 - To move work to Telegram, prefer closing the TUI tab over `/handoff`: handoff re-binds the TG home
   channel to the TUI session and replaces the long-running TG conversation context.
+- Triage each "You have N orchestration messages" with a heartbeat filter, not raw JSON:
+  `orca orchestration check --run <run> --peek --json | python -c "import json,sys;d=json.load(sys.stdin);r=d.get('result',d);hb=0\nfor m in r.get('messages',[]):\n  if m['type']=='heartbeat': hb+=1\n  else: print(m['id'],m['type'],m['from_handle'][:13],m['subject'][:100]);print(m['body'][:1500])\nprint('hb',hb)"`
+  Heartbeats only: reply in one line, take no action. A result gone from a later peek was consumed by
+  the TG session; do not resend it.
+- The TG watcher wakes only on `worker_done` / `question` / `escalation`, not on `status`. A `status`
+  carrying art or "waiting for your choice" is invisible to the owner: relay it yourself with
+  `hermes send` and name the session that must receive the answer. Do not ack it.
+- Choice between variants of one image (denoise, style): send one 2x2 PIL collage (original +
+  variants, positions named in the caption), not four files.
+- `hermes send` with `MEDIA:` on a 1-2 MB PNG can fail `Timed out` (`agent.log`: `Failed to send
+  media`) while text still sends. Send a downscaled JPEG (~1600 px, quality 85) from `$TMPDIR`, and
+  check the output says `sent`.
 
 ## Pitfalls
 
@@ -57,3 +69,7 @@ orchestration messages" in the TUI tab bound to that Run).
 - `worker-release` on a dispatch in `release_unknown` whose tab is already gone keeps returning
   "could not be confirmed stopped" — it is bookkeeping residue, not a live process; confirm with
   `orca terminal list` and move on.
+- First Telegram gateway start on a fresh install: `Platform 'Telegram' dependencies missing — attempting install...` blocks the event loop, the watchdog kills the gateway (exit 75). Pre-install with `hermes pm install --extra telegram`, then start. `hermes: no dependency environment is committed for this install` from the Scheduled Task = run `hermes pm repair`.
+- `hermes gateway start/install` from an agent terminal fails direct spawn (Job Object); start with `schtasks /Run /TN Hermes_Gateway` (single slashes, not `//Run`).
+- Agent cannot patch `config.yaml` with file tools; use `hermes config set platforms.telegram.enabled true`.
+- One bot token per machine: two gateways on one token fight over getUpdates (409). Give each machine its own bot.

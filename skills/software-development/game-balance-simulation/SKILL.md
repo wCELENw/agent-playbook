@@ -43,6 +43,114 @@ Project specifics (roles, zones, card numbers) live in the repo `CLAUDE.md` and
   without them is noticeably weaker. Every sim build carries at least the minimal crafted buff
   set; at the top level of the stage also the reputation buff. Reports show a separate
   "without buffs" row next to the baseline.
+- **Model before numbers, always in this order:** close the concept and logic of a system
+  (buffs, stances, gear) → implement it → raise the base stats ("апнуть показатели") → only
+  then fit `[Б]` numbers with tests. When quick tests on a half-closed model show wild spreads,
+  report a short overview (what the logic proved, what the numbers say, "numbers measure an
+  unclosed model") and park the worker's number proposals until the balancing step; do not
+  ask the owner to pick number tweaks first.
+- **Design a buff system through the PARAMETERS each element gives,** not through numbers:
+  per source (crafted, auras, seasonal/red, quest/regular, reputation, bought food) a table
+  element → engine stat ids → effect kind (flat add / inc / more / special rule) → archetypes,
+  relative strength marks instead of values, a parameter × source matrix for coverage and
+  duplicates, missing engine stats listed. Too few elements is a recorded owner complaint.
+  Crafted tiers are keyed to a minimum USE level per colour (lower tier usable without
+  penalty) with craft unlocking a few levels later; test only the colour fork that falls
+  inside the tested level range.
+  Owner's buff model shape: every crafted element grows with recipe level inside its colour
+  (not flat per colour); one archetype elixir slot, replaced only on player confirmation; an
+  extra all-attributes elixir slot crafted from cores; three auras (ward = HP + barrier +
+  resists, attack, regen); red/seasonal is fat (HP, regen, defence, fixed ~10 % damage taken
+  cut) and sits ON TOP of the balancer. Reputation buffs start as three groups: faction (own
+  faction only), vows (3 mutually exclusive, DWAR good/evil style), stacking utility; rank
+  passives always stack and stay out of the balancer. Many-to-one conflict slots (A–D subtypes)
+  were rejected as unclear.
+- **Targets as a pack corridor, not a multiplier.** The owner states what a well-geared player
+  holds without buffs (e.g. 5 packs) and "more with full buffs"; derive the full-buff multiplier
+  from it (packs ~ √power: 5→7 ≈ ×2, 5→8 ≈ ×2.6) and offer those as the fork. Balance against
+  full buffs minus red.
+- **Docs before engine.** A closed buff concept goes to a docs-only designer worker that adds an
+  "ТЗ на реализацию" section (slots and conflict groups, each new stat with file/function,
+  formula, order, cap and a failing test, data schema per element with `[Б]` stubs, sim kits,
+  calculator changes, acceptance, out-of-scope). The engine worker (Opus high) starts only after
+  the owner read it — owner: without an exact spec the result is garbage.
+- **Gear/buff tracks run in the owner's order:** gear base + rarity + sets (with an engine
+  prototype and tests) → archetype rebuild on that gear → buff system on top (buff strength
+  is calibrated from gear) → calculator build-assembler for runs. Launch the next track only
+  when the previous one's numbers stand; do not start runs while numbers still move.
+- **Before a gear/buff worker asks the owner a fork, the spec says: grep
+  `docs/open-questions.md` for an existing decision** (e.g. set rules). Workers re-ask closed
+  questions (partial set thresholds against a recorded "whole set only" rule) and the owner is
+  annoyed; answer those yourself with `file:line`. Market references ("all three games use
+  partial thresholds") never override a recorded owner decision.
+- "N variants of sets" in a modular-set model means N reference dolls, each assembled from
+  several modular sets plus single items, with growth per rarity step; state that reading
+  back when relaying.
+- **Gear power curve the owner wants: steep at the top.** Full doll vs grey-without-sets on
+  the same level: blue ~×1.3, gold ~×1.8, purple ×2.2–2.5; purple is hard to get, so the step
+  must be felt. Gold and purple items open extra generic stats (HP %, damage %, regen) on top
+  of their item-specific ones; that is what lifts the top of the curve. A flat curve (purple
+  ×1.6) gets rejected.
+- **Reference builds follow the realistic doll by level:** early levels already in green by the
+  mid-single digits (not grey), and from the low teens every archetype is tested in blue, gold
+  and purple sets. Grey-only builds past the first levels misstate what players face.
+- **Owner prefers big numbers:** HP around ×2 of a conservative baseline and damage scaled with
+  effective HP, so hits against crowds read as strong; a wider scale also gives every knob a
+  bigger tuning window. Rescale both sides together and prove with a smoke run that fight
+  length and win rate barely moved. Before proposing a rescale, check git history for an
+  earlier one and list which flat pools it skipped (resource pools and their costs are the
+  usual gap); show the owner current doll numbers first. Procedure and pitfalls —
+  `references/rescale.md`.
+- **Closing the gear + buff block: catalog page, then forks, then a pack run.** Before refitting
+  monsters to new numbers, the owner closes sets and buffs on ONE generated page (e.g.
+  `prototypes/reports/<page>/`, generator from content YAML, checked against the
+  engine's `deriveStats`/calculator so it fails on any mismatch): summary cards vs targets (full
+  buffs vs no buffs, red on top, purple vs grey), set × colour table with deviation from the
+  rarity curve, buff slot × colour matrix with L15/L24 numbers and ablation per slot, full-buff
+  result per doll, parameter × source matrix with numbers, a facts-only skew list. Build it with
+  one UI worker (Opus medium) that reuses the calculator formulas. Then close forks one per
+  `clarify` question, record each in the decisions file at once, and batch the approved number
+  changes into one worker. The owner is tired of this block dragging: no extra exploration
+  rounds between forks.
+  A power metric of EHP × hit ignores accuracy, penetration, regen, leech, resists and block, so
+  it understates buffs. The owner does not raise buff numbers on it alone: first a short pack
+  run (all reference dolls at the test level, kits none / grey full / green full / green+red,
+  packs 3/5/7/8/10, ~100 fights/cell, `--provoke auto`) and read packs held at ~60 % wins.
+- **Two test tiers:** a quick build check (1–5 min: few builds × the target encounter ladder,
+  ~200 fights/cell, Wilson 95 % interval, early stop when the interval is narrow, A/B mode on the
+  same seeds) for iteration, and the multi-hour package only for acceptance. Offer the quick
+  tier before asking the owner to wait hours for one answer.
+  Pick the comparison load so the grey baseline wins ~30–60 %: if light builds hit 100 % already
+  in blue, colour steps are invisible — add bigger packs/elites before judging the rarity curve.
+- **Mechanics must be explainable on demand:** hit chance, armour, resistances, crit, block,
+  regen as formulas with constants, 2–3 worked examples and `file:line` in one design doc; odd
+  properties (e.g. armour weakening against big hits) go to the owner as questions, never
+  silently changed. The calculator is the doll's target template: slots → attributes →
+  derived stats → combat numbers, every value with formula and substitution. Update it in the
+  same wave as any gear/stat change, not later.
+- Dual wielding in this owner's games is not a second full attack: the swing uses the main
+  weapon plus a share of the off-hand's stats, optionally a rarity-scaled chance of a reduced
+  extra hit; size it against one-hander+shield and two-hander on DPS/EHP.
+- **Owner's stat-cap style:** percentage stats (crit chance etc.) get a soft cap (diminishing
+  gain) under a hard cap, unreachable by the mid-teens; only top-tier "red" items may lift the
+  hard cap (keep a `*_cap_bonus` stat for it). Every stat in the doc must be read by the engine:
+  dead stats get implemented, not deleted. Players and monsters share rules (monsters crit too).
+- **Damage over time = base + stat modifiers, never attacker level.** Base = a share of the
+  applying hit's damage, snapshot at application; modifiers = status power + the matching damage
+  stat (physical for bleed, spell for burn). Level-only growth is rejected as meaningless.
+- **Defensive stances are a tank niche, not a universal cut.** Base cut ~10 % for everyone; heavy
+  armour +10 %, shield in hand +10 % (max ~30 % only for heavy+shield, plus the shield's passive
+  block); light armour gets evasion instead, clothless casters a barrier, tuned to be worth about
+  the heavy +10 %. A flat 30 % for all is rejected as too fat.
+- **Compare like with like: monsters carry an armour class too.** Stances and other
+  gear-dependent mechanics apply to monsters by the same rules via a card field (brutes heavy
+  with the big cut, casters in robes with a barrier, beasts light with evasion); giving monsters
+  only the base cut drops brute defence and fakes a player win-rate rise. Reference builds are
+  split by profile armour (heavy / light / robe, at least one build per class), and the
+  armour class of both sides is exposed in sim specs and the calculator so later tracks can
+  group by it. Before merging such a mechanic: a short A/B per armour class (~100 fights per
+  class × packs 1/5/10, before/after, on the level and colours the owner names, e.g. L10
+  green + blue as two runs) on the stronger host.
 
 ## Procedure
 
@@ -103,7 +211,18 @@ Project specifics (roles, zones, card numbers) live in the repo `CLAUDE.md` and
 6. **Runs**: scripts only (no LLM watcher), coarse grid → narrow around target, exit code
    catches crashes; morning summary one line to Telegram; anomalies flagged by script. Heavy
    packages go to the stronger machine the owner allowed (see memory for hosts); keep the
-   coordinator host for checks — its RAM is small, one docker compose at a time.
+   coordinator host for checks — its RAM is small, one docker compose at a time. With both
+   hosts online, split a full package by spec and fight count ~70 % powerpc-1 / ~30 % minipc so
+   both finish together (owner preference; details in `agent-delegation-and-verification`
+   `references/host-resources.md`).
+   - **Offload any heavy check (full `pnpm test`, quick sims, packages) from a RAM-starved
+     coordinator host** with a project wrapper (e.g. `tools/<host>.sh run|wait|get`):
+     `git archive HEAD` minus big asset dirs (keep `docs/` — tests read design JSON), `scp`,
+     `tar -x` in a per-run folder, copy `.env.example` to `.env`, write the command to a `.sh`
+     file and run it via `docker compose run --rm --no-deps tools sh <file>` under its own
+     `COMPOSE_PROJECT_NAME`. Inline commands break on quotes/pipes through PowerShell +
+     `sh -c`; `git fetch <bundle>` into a clone failed on the Windows host where the archive path
+     works. Workers wait with one background `wait`, never a loop.
    - **Prepare the remote host while the owner is awake**: copy the repo (`git bundle
      create <native scratch path> master`, `scp`, `git clone -b master <bundle>`, copy
      `.env.example` to `.env`) and confirm `docker info` answers there. Commands that delete

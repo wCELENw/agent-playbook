@@ -21,6 +21,8 @@ description: "Track and report per-token agent spend vs estimate."
    В TUI то же — виджет `/tokens` (`tui-widgets/tokens.mjs`), обновление раз в 15 с.
 1. **Найти источник счётчиков.** Для Hermes — `~/AppData/Local/hermes/state.db`
    (`session_model_usage`, `sessions`); схема и готовые запросы — `references/hermes-usage-store.md`.
+   Для Codex (лимит подписки тоже горит по токенам) — `references/codex-usage-store.md`: где лежат
+   счётчики и как свести задачу с картинкой к одному ходу.
    Если источник накопительный — снимать точку **до** и **после** этапа и отчитываться дельтой.
 2. **Взять ставки с первоисточника** — страницы конкретной модели у провайдера, сверив имя модели
    с конфигом (`config.yaml` → `model.default`). Три категории токенов считаются раздельно:

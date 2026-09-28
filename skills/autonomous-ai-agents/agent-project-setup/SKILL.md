@@ -80,6 +80,9 @@ description: "Use when wiring Hermes/Codex/Claude or adding skill packs."
    харнессах (auto_load / хуки / `developer_instructions`): `references/third-party-skill-packs.md`.
 8. **Перенос настроек Hermes на другой ПК** (без секретов и истории, SOUL как файл, шаги
    восстановления): `references/hermes-migration.md`.
+8a. **Синхронизация публичного playbook с машиной** (оба направления, полный список навыков,
+   очистка частного, производные схемы): `references/playbook-sync.md`; ежедневный автопулл и
+   разбор CONFLICT/LOCAL — скилл `multi-machine-agent-sync`.
 9. Коммит в репозитории — только изменения схемы (симлинк `.agents/skills`, удаление дублей,
    правка CLAUDE.md); глобальные файлы в репо не попадают.
 
