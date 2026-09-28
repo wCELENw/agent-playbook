@@ -119,6 +119,8 @@ Frontmatter роли (`model`, `effort`, `tools`) в Orca-воркере не д
 - Длинный inline-цикл bash с `$(...)` Hermes блокирует как «malformed payload» — вынести в скрипт.
 - `worker_done` после release отклоняется («capability is revoked») — это не ошибка, ack.
 - `--effort` требует `--model` и несовместим с `--terminal`.
+- `--from <handle>` принимают только `run-create`/`worker-start`/`send`; `worker-show` и `check` его
+  отвергают («Unknown flag --from») — им хватает `--dispatch` / `--terminal`.
 - Самоотчёт модели о себе недостоверен; модель — только `launch.effective` или экран терминала.
 - `orca terminal close` не заменяет `worker-release`, а `worker-release` не закрывает вкладку. Если после
   release вкладка осталась (`orca terminal list`), закрыть её `orca terminal close --terminal <handle>` —
