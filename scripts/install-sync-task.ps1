@@ -3,7 +3,7 @@
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $py = (Get-Command pyw, py -ErrorAction SilentlyContinue | Select-Object -First 1).Source  # pyw: no console window
-$user = "$env:USERDOMAIN\$env:USERNAME"
+$user = [Security.Principal.WindowsIdentity]::GetCurrent().Name  # not USERDOMAIN: over SSH it is WORKGROUP
 
 $action = New-ScheduledTaskAction -Execute $py -Argument "`"$repo\scripts\sync_playbook.py`"" -WorkingDirectory $repo
 $triggers = @(
