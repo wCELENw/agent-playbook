@@ -41,10 +41,9 @@ The owner played these games and rejects sample-based reports at once ("где �
   columns № | Семья/слот | Слой | Что даёт (плоско/%) | Ступени и рост ([Б]) | Срок/расход |
   Конфликт | Источник | Референс | Решение владельца (empty). Rows outside recorded owner
   decisions are marked "предложение, вне решений". 12–25 rows.
-- Research runner model: if the owner names one (e.g. Opus medium), use an Orca Claude
-  worker with the role profile path in the spec (`delegate_task` has one model for all
-  children).
-- Delegating this to a `delegate_task` researcher: put the owner's named items, the known
+- Research runner: an Orca Claude worker (`--agent claude --model opus --effort medium`, or the
+  model the owner names) with the role profile path in the spec; `delegate_task` is not a route.
+- Research worker spec: put the owner's named items, the known
   summary-guide URLs and "aim for 40+ distinct entries" in the goal; a bare "research X in
   games A, B" returns a thin card sample. Spot-check 2–3 numbers against the cards yourself
   (curl + `iconv -f cp1251` works when `web_extract` times out) before forwarding.

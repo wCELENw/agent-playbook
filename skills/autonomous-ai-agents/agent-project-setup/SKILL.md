@@ -61,8 +61,8 @@ description: "Use when wiring Hermes/Codex/Claude or adding skill packs."
    Под Orca у Codex свой `CODEX_HOME` (`%APPDATA%\orca\codex-runtime-home\home`) — править
    config.toml в ОБОИХ местах, иначе воркеры Orca идут со старыми настройками.
 2. **Резервные копии** в `$HERMES_HOME/backups/` перед любой правкой глобальных файлов.
-3. **Модели** — см. `references/harness-config.md` (ключи, проверки и порядок смены модели
-   во всех местах). Маршрутизация задач по моделям и цикл Orca-воркера — скилл `orca-worker-routing`.
+3. **Модели и effort** — см. `references/harness-config.md` (ключи, проверки, порядок смены модели
+   и effort во всех местах, ловушка CRLF при `sed -i`). Маршрутизация задач по моделям и цикл Orca-воркера — скилл `orca-worker-routing`.
 4. **Симлинки на Windows**: `pwsh -NoProfile -Command "New-Item -ItemType SymbolicLink -Path <link> -Target <file>"`
    (работает без админа при включённом Developer Mode; для каталога можно `-ItemType Junction`).
    `cmd //c mklink` из git-bash молча не срабатывает. Сканер навыков Hermes ходит по ссылкам
@@ -74,7 +74,8 @@ description: "Use when wiring Hermes/Codex/Claude or adding skill packs."
    `hermes chat -q "Reply with exactly: OK" -Q` (+ `--provider X -m Y`) и строка `API call #1: model=... provider=...`
    в `$HERMES_HOME/logs/agent.log`; Codex — `codex exec --skip-git-repo-check -s read-only "<вопрос про первую
    строку CLAUDE.md и слово из глобальных правил>"`.
-7. **Сторонние пакеты навыков/плагинов** (caveman, ponytail и т.п.) — порядок установки, сканер,
+7. **Сторонние пакеты навыков/плагинов** (caveman, ponytail, superpowers и т.п.) — оценка применимости
+   до установки (хук старта, пересечения, конфликты с `CLAUDE.md`), порядок установки, сканер,
    ручная установка плагина, проверка загрузки и включение режима по умолчанию во всех трёх
    харнессах (auto_load / хуки / `developer_instructions`): `references/third-party-skill-packs.md`.
 8. Коммит в репозитории — только изменения схемы (симлинк `.agents/skills`, удаление дублей,
@@ -85,7 +86,8 @@ description: "Use when wiring Hermes/Codex/Claude or adding skill packs."
 По-русски, только ключевые выводы по этапам (сделано / чем подтверждено / что осталось);
 детализацию не выносить. В финале аудита — таблица «решение/роль → харнесс → модель → effort».
 Предложения владельца по моделям не оспаривать повторно после его решения (пример: Luna —
-всегда effort high, она почти бесплатна).
+всегда effort xhigh, только разовые запросы, поиск и слив сырой инфы; всё с обработкой данных —
+Opus 5.5 medium или low, решение 2026-09-28).
 
 ## Ловушки
 
@@ -100,7 +102,7 @@ description: "Use when wiring Hermes/Codex/Claude or adding skill packs."
 
 - **Длинная сессия на Anthropic может обрываться `finish_reason=content_filter` (refusal)** —
   в интерфейсе это выглядит как «что-то встало». Первым делом `tail $HERMES_HOME/logs/errors.log`,
-  затем проверить побочные эффекты (`git status`, `delegate_task action=list`, `orca terminal list`).
+  затем проверить побочные эффекты (`git status`, `orca terminal list`, `orca orchestration worker-list --json`).
   После второго обрыва предложить новую сессию с кратким списком оставшегося.
 - **`hermes config set` на часть рабочих ключей пишет «not a recognized config key»**
   (`agent.reasoning_effort`, `delegation.reasoning_effort`, `display.details_mode`, `display.sections.*`).

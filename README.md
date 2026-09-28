@@ -7,7 +7,7 @@
 ## English
 
 A playbook for running AI coding agents across projects: global rules, model routing, delegation to
-workers (Orca, Hermes `delegate_task`), acceptance of their work, and **visualising the work in the
+Orca workers, acceptance of their work, and **visualising the work in the
 browser**: live dashboards for long runs, analytical report pages with charts, and clickable
 prototypes and diagrams. The owner sees what the agents are doing and what they produced without
 reading raw logs. Distilled from hands-on work across dozens of projects.
@@ -29,11 +29,15 @@ from the routing table in `global/GLOBAL_RULES.md` §9:
 
 | Work | Executor |
 |---|---|
-| mechanical: search, counting, running checks | scripts (`execute_code`), no model |
-| recon, aggregation, edits from a complete spec | subagent `delegate_task`, Opus 5.5 medium |
-| architecture, hard edits, acceptance review, hard bugs | Orca worker, Claude Opus 5.5 high |
-| a role with a profile in `.claude/agents/*.md` | Orca worker with that profile |
-| image generation | Codex |
+| mechanical, read-only: search, counting, git, running checks | the coordinator itself, no model |
+| recon, analysis, aggregation, edits from a complete spec | Orca worker, Claude Opus 5.5 medium (low for simple recon) |
+| heavy multi-stage development, architecture, hard edits, acceptance review, hard bugs | Orca worker, Claude Opus 5.5 high (medium when the spec is complete) |
+| a role with a profile in `.claude/agents/*.md` | Orca worker with the model and effort from that profile |
+| one-off lookup, web search, raw info dump; image generation | Orca worker, Codex `gpt-6-luna` xhigh |
+
+Every task that needs a model goes to its own Orca worker (one worker, one task, one set of files);
+the coordinator does not write project files itself. Hermes `delegate_task` and in-session subagents
+are not routes. Sonnet is not used (owner decision 2026-09-28); Luna only fetches and dumps.
 
 A worker's report is a self-report, not a fact. The coordinator checks the diff and runs the project's
 validation, then commits and reports back with `file:line` evidence. Anything the owner should look
@@ -50,7 +54,7 @@ built with [Archify](https://github.com/tt-a1i/archify).
 
 | Path | What | Installed to |
 |---|---|---|
-| `global/GLOBAL_RULES.md` | global rules: principles, language and tone, model routing (§9), project layout (§10), iteration cap (§12), CPU cap (§13), results as web pages (§14), worker context economy (§15) | `~/.agents/GLOBAL_RULES.md` + symlinks from `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
+| `global/GLOBAL_RULES.md` | global rules: principles, language and tone, model routing (§9), project layout (§10), always-on skills (§11), iteration cap (§12), CPU cap (§13), results as web pages (§14), worker context economy (§15) | `~/.agents/GLOBAL_RULES.md` + symlinks from `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
 | `skills/<category>/<name>` | global Hermes skills | `%LOCALAPPDATA%\hermes\skills\` |
 | `project-template/` | skeleton of a new project: `CLAUDE.md`, studio process, roles, task queue | root of a new repository |
 | `docs/startup-settings.md` | machine checklist for Hermes + Orca: each setting with its check | run by your agent after install |
@@ -150,7 +154,7 @@ not included and are distributed under their own licenses.
 ## Русский
 
 Шаблон поведения агентов для всех проектов: глобальные правила, маршрутизация моделей, делегирование
-воркерам (Orca, `delegate_task`), приёмка их работы и **визуализация работы в браузере**: живые
+воркерам Orca, приёмка их работы и **визуализация работы в браузере**: живые
 дашборды долгих прогонов, аналитические страницы отчётов с графиками, кликабельные прототипы и схемы.
 Владелец видит, что делают агенты и что получилось, не читая сырые логи. Собран на базе работы
 над десятками проектов.
@@ -166,9 +170,12 @@ not included and are distributed under their own licenses.
 ![Как задача проходит через агентов](docs/how-it-works.png)
 
 Владелец ставит задачу. Координатор (Hermes, Claude Opus 5.5) раскладывает её и выбирает исполнителя
-по таблице §9 `global/GLOBAL_RULES.md`: механику делают скрипты без модели, работу по готовой спеке —
-субагент `delegate_task`, архитектуру и сложные правки — Orca-воркер Claude с профилем роли,
-картинки — Codex.
+по таблице §9 `global/GLOBAL_RULES.md`: механику (поиск, подсчёт, git, проверки) координатор делает сам
+без модели; всё, что требует модели, — отдельный Orca-воркер на задачу: разведку, сводку и правки по
+готовой спеке — Claude Opus 5.5 medium (low для простой разведки), тяжёлую разработку, архитектуру,
+сложные правки и приёмку — Opus 5.5 high, роли — с моделью из профиля, разовые запросы, поиск в сети
+и картинки — Codex `gpt-6-luna` xhigh. `delegate_task` и субагенты внутри сессии маршрутом не считаются;
+Sonnet не используется (решение владельца 2026-09-28).
 
 Самоотчёт исполнителя не считается фактом: координатор сверяет diff и прогоняет проверки проекта,
 затем коммитит и отдаёт отчёт со ссылками `файл:строка`. Всё, что владелец должен посмотреть, выходит
@@ -186,7 +193,7 @@ not included and are distributed under their own licenses.
 
 | Путь | Что | Куда ставится |
 |---|---|---|
-| `global/GLOBAL_RULES.md` | глобальные правила: принципы, язык и тон, маршрутизация моделей (§9), раскладка проекта (§10), лимит итераций (§12), CPU (§13), результаты веб-страницами (§14), экономия контекста воркеров (§15) | `~/.agents/GLOBAL_RULES.md` + симлинки `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
+| `global/GLOBAL_RULES.md` | глобальные правила: принципы, язык и тон, маршрутизация моделей (§9), раскладка проекта (§10), навыки по умолчанию (§11), лимит итераций (§12), CPU (§13), результаты веб-страницами (§14), экономия контекста воркеров (§15) | `~/.agents/GLOBAL_RULES.md` + симлинки `%LOCALAPPDATA%\hermes\SOUL.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` |
 | `skills/<категория>/<имя>` | глобальные навыки Hermes (см. ниже) | `%LOCALAPPDATA%\hermes\skills\` |
 | `project-template/` | каркас нового проекта: `CLAUDE.md`, процесс студии, роли, очередь задач | корень нового репозитория |
 | `docs/startup-settings.md` | стартовые настройки машины для Hermes + Orca: каждый пункт с проверкой | выполняет агент после установки |

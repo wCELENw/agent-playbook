@@ -15,6 +15,10 @@ description: "Track and report per-token agent spend vs estimate."
 
 ## Процедура
 
+0. **Готовый сводный отчёт:** `py ~/AppData/Local/hermes/tui-widgets/token_report.py [--session ID | --since <git-ref|iso> --until …] [--json]`
+   (запускать из каталога проекта) — Hermes-сессия + дети delegate_task + воркеры Claude Code
+   (`~/.claude/projects/*<project>*`) и Codex (`~/.codex/sessions`, по `cwd`) с разбивкой по моделям.
+   В TUI то же — виджет `/tokens` (`tui-widgets/tokens.mjs`), обновление раз в 15 с.
 1. **Найти источник счётчиков.** Для Hermes — `~/AppData/Local/hermes/state.db`
    (`session_model_usage`, `sessions`); схема и готовые запросы — `references/hermes-usage-store.md`.
    Если источник накопительный — снимать точку **до** и **после** этапа и отчитываться дельтой.

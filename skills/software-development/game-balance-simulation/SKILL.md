@@ -161,7 +161,7 @@ Project specifics (roles, zones, card numbers) live in the repo `CLAUDE.md` and
      run --rm --no-deps tools sh -c "pnpm install --frozen-lockfile && pnpm content:build"`
      (otherwise every spec exits 1 in 2 s with `ERR_MODULE_NOT_FOUND @<project>/content`).
      A spec that exits in seconds is a setup failure: read its log before reporting ETA.
-   - Report finished tracks without waiting for the rest: a `delegate_task` aggregator reads
+   - Report finished tracks without waiting for the rest: an Orca aggregator worker (`--agent claude --model opus --effort medium`) reads
      JSONL (streamed in Python), writes `balance/reports/<stage>-partial.md` + `.json` with
      class × weapon, level curve, potion delta, buff sensitivity (p.p. per +10 % power), top 5
      problems with file + numbers + first test, and a caveats section (missing tracks, old bot,

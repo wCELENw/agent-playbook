@@ -128,7 +128,7 @@
       "col": 3,
       "type": "backend",
       "label": "Subagent",
-      "sublabel": "delegate_task, Opus medium",
+      "sublabel": "Orca worker, Opus medium",
       "width": 140
     },
     {
